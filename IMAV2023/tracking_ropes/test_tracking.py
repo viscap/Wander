@@ -2,6 +2,10 @@
 """
 @author: AranaCorp
 https://www.aranacorp.com/pt/detectar-uma-linha-com-python-e-a-opencv/
+
+updated by Wander
+wanderok@msn.com
+
 """
 import cv2
 import time
@@ -12,8 +16,11 @@ from time import sleep
 
 class LineTracking():
     """
+    AranaCorp:
     Classe permettant le traitement d'image, la délimitation d'un contour et permet de 
-    trouver le centre de la     forme detectée
+    trouver le centre de la forme detectée
+    
+    Wander:
     Aula que permite o tratamento de imagens, a delimitação de um contorno e permite
     encontre o centro da forma detectada
     """
@@ -36,9 +43,14 @@ class LineTracking():
         ret,thresh = cv2.threshold(blur,180,255,cv2.THRESH_BINARY_INV) # binarizamos a imagem
 
         self.img_inter=thresh
-        """Une ouverture permet d'enlever tous les élements qui sont plus petits que l'élement structurant (ou motif)
-        Une fermeture permet de "combler" les trous qui ont une taille inférieur à l'élement structurant """
-        """Uma abertura permite remover todos os elementos menores que o elemento estruturante (ou padrão)
+        
+        """
+        AranaCorp:
+        Une ouverture permet d'enlever tous les élements qui sont plus petits que l'élement structurant (ou motif)
+        Une fermeture permet de "combler" les trous qui ont une taille inférieur à l'élement structurant 
+        
+        Wander:
+        Uma abertura permite remover todos os elementos menores que o elemento estruturante (ou padrão)
         Um fecho permite "preencher" os buracos que têm um tamanho menor que o elemento estruturante """
 
         kernel_open = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5)) # criamos o elemento estruturante da abertura
@@ -57,10 +69,13 @@ class LineTracking():
         self.centroids = output[3] #retorna os centros da(s) forma(s) da imagem
 
         for c in self.centroids :
-            """Permet de faire la moyenne des centres de la forme, en effet sur l'image test,
+            """
+            AranaCorp: 
+               Permet de faire la moyenne des centres de la forme, en effet sur l'image test,
                il y a deux centres qui sont très proches et la moyenne de deux convient.
                On pourra imaginer que dans un cas général on modifie cela
 
+            Wander:   
                Permite calcular a média dos centros da forma, de fato na imagem de teste,
                tem dois centros muito próximos e a média de dois está bom.
                Podemos imaginar que em um caso geral modificamos este
@@ -70,18 +85,18 @@ class LineTracking():
 
         self.img_final = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
 
-        #permet de rajouter un carré rouge à l'endroit du centre de la forme
-        #permite adicionar um quadrado vermelho no centro da forma
+        #AranaCorp: permet de rajouter un carré rouge à l'endroit du centre de la forme
+        #Wander: permite adicionar um quadrado vermelho no centro da forma
         #self.img_final[int(self.mean_centroids[1])-10 : int(self.mean_centroids[1])+20, int(self.mean_centroids[0])-10 : int(self.mean_centroids[0])+20] = [0,0,255]
         for c in self.centroids :
             self.img_final[int(c[1])-5 : int(c[1])+10, int(c[0])-5 : int(c[0])+10] = [0,255,0]
 
 if __name__ == '__main__' :
-   
-    #para capturar da camera do drone ou webcam  
+    #Wander: to capture images from the drone camera or a webcam  
     #camera = cv2.VideoCapture(0) 
 
-    #para capturar um arquivo de video
+    #Wander: to load a video file
+    # this video was recored by Prof. Ramos
     camera = cv2.VideoCapture('ramos5.mp4')
 
     if camera.isOpened():
@@ -89,26 +104,28 @@ if __name__ == '__main__' :
         while validacao:
             validacao, frame = camera.read()
             
-            #gera uma imagem do frame capturado
+            #Wander: generate a frame of the captured image
             cv2.imwrite('imgTmp.png',frame)
 
-            #processa a imagem 
+            #Wander: process the image 
             test = LineTracking('imgTmp.png') #créer un objet LineTracking qui est la Classe créée au dessus .png ou .jpg
-            #test = LineTracking('teste.png') #cria um objeto LineTracking que é a classe criada acima .png ou .jpg
             
             test.processing()
 
-            #exibe a imagem original após o redimensionamento
+            #Wander: show the original image after processing
             cv2.imshow('image',frame) #affiche l'image original après redimensionnement
 
-            #exibe a imagem após o processamento
+            #Wander: show the processed image
             ##cv2.imshow('process',test.img_inter ) #affiche l'image après traitement
             cv2.imshow('cable',test.img_final) #affiche l'image après traitement
 
-            #para fechar as janelas aperte a barra de 'espaço'
+            #Wander: to finish, press the "space bar" key
             key= cv2.waitKey(1);
             if  key == ord(' '): #pour fermer les fenêtres appuyer sur la barre 'espace'
                 break
 
+        #Wander: to free memory
         camera.release()    
+
+        #Wander: to close the opened windows
         cv2.destroyAllWindows()
